@@ -2,6 +2,9 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { cubicOut } from "svelte/easing";
 import type { TransitionConfig } from "svelte/transition";
+import { invoke } from '@tauri-apps/api/tauri';
+import { currentLyrics, currentPlaying, plainLyrics, type Track } from "./stores";
+
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -59,4 +62,39 @@ export const flyAndScale = (
         },
         easing: cubicOut
     };
+};
+
+export let lyricsLoading = true;
+
+export const getLyrics = async (track: Track) => {
+    lyricsLoading = true;
+    try {
+        const response = await fetch(
+            `https://lrclib.net/api/search?artist_name=${track.artist}&track_name=${track.title}`
+        );
+        if (!response.ok) {
+            throw new Error('Failed to fetch lyrics');
+        }
+        const data = await response.json();
+        const lyrics = data[0].syncedLyrics;
+        currentLyrics.set(lyrics);
+        plainLyrics.set(data[0].plainLyrics);
+        lyricsLoading = false;
+        return lyrics;
+    } catch (error) {
+        console.error('Error fetching lyrics:', error);
+        lyricsLoading = false;
+        throw error;
+    }
+};
+
+export const getCurrentPlaying = async () => {
+    try {
+        const response: Track = await invoke('get_current_media_metadata');
+        currentPlaying.set(response);
+        return response;
+    } catch (error) {
+        console.error('Error getting current playing track:', error);
+        throw error;
+    }
 };
