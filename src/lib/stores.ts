@@ -12,6 +12,7 @@ const currentPlaying = writable<Track | null>(null);
 
 export const currentLyrics = writable<Array<Lyrics> | null>(null);
 export const plainLyrics = writable<string | null>(null);
+export const playerDialog = writable<boolean>(false);
 
 
 export { currentPlaying };

@@ -2,13 +2,14 @@
 	import { onMount } from 'svelte';
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { Lyrics } from 'paroles';
-	import { getLyrics, getCurrentPlaying, downloadLyrics } from '$lib/utils';
+	import { getLyrics, getCurrentPlaying, downloadLyrics, getAllPlayers } from '$lib/utils';
 	import { currentPlaying, type Track } from '$lib/stores';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { Download } from 'lucide-svelte';
 	import { plainLyrics } from '$lib/stores';
+	import CurrentPlaying from '$lib/components/CurrentPlaying.svelte';
 
 	let lyrics;
 	let sync: Lyrics;
@@ -24,6 +25,7 @@
 	const leadTime = -600;
 
 	onMount(async () => {
+		console.log(await getAllPlayers());
 		prevPlaying = await getCurrentPlaying();
 		lyrics = await getLyrics(prevPlaying);
 		sync = new Lyrics(lyrics);
@@ -64,40 +66,20 @@
 	}, 300); // Update every second
 </script>
 
-<div class="relative flex min-h-[80vh] min-w-full items-center justify-center rounded-xl">
+<div
+	class="relative flex min-h-[80vh] min-w-full items-center justify-center rounded-xl bg-white dark:bg-black"
+>
 	<Tabs.Root value="syncedLyrics">
 		<div class="absolute left-0 top-0 min-w-full gap-2 text-sm uppercase">
-			<div class="flex min-w-full justify-between">
-				<div class="flex gap-2">
-					<div class="song-title font-semibold text-gray-900">
-						{currentPlayingTitle} -
-					</div>
-					<div class="song-artist text-gray-600">{currentPlayingArtist}</div>
-				</div>
-
-				<Tooltip.Root>
-					<Tooltip.Trigger>
-						<button 
-						on:click={async () => {
-							console.log('Downloading lyrics');
-							await downloadLyrics();
-						}}
-						>
-						<Download
-						
-						/>
-						</button>
-						
-					</Tooltip.Trigger>
-					<Tooltip.Content side="bottom">
-						<p>Download LRC file</p>
-					</Tooltip.Content>
-				</Tooltip.Root>
-			</div>
+			<CurrentPlaying title={currentPlayingTitle} artist={currentPlayingArtist} />
 			<div class="flex min-w-full items-center justify-center">
 				<Tabs.List>
-					<Tabs.Trigger value="syncedLyrics">Synced lyrics</Tabs.Trigger>
-					<Tabs.Trigger value="plainLyrics">Plain lyrics</Tabs.Trigger>
+					<Tabs.Trigger class="dark:data-[state=active]:bg-black" value="syncedLyrics"
+						>Synced lyrics</Tabs.Trigger
+					>
+					<Tabs.Trigger class="dark:data-[state=active]:bg-black" value="plainLyrics"
+						>Plain lyrics</Tabs.Trigger
+					>
 				</Tabs.List>
 			</div>
 		</div>
@@ -114,3 +96,9 @@
 		</Tabs.Content>
 	</Tabs.Root>
 </div>
+
+<!-- <style>
+	data-[state=active]{
+
+	}
+</style> -->

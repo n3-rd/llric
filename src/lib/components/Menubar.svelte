@@ -22,61 +22,65 @@
 	// await appWindow.startDragging();
 </script>
 
-<Menubar.Root data-tauri-drag-region class="fixed z-[9999] min-w-full bg-white py-4">
-	<div class="flex w-full justify-between bg-white" data-tauri-drag-region>
+<Menubar.Root data-tauri-drag-region class="fixed z-[9999] min-w-full py-4 dark:bg-black">
+	<div class="flex w-full justify-between bg-white dark:bg-black" data-tauri-drag-region>
 		<Menubar.Menu>
 			<Menubar.Trigger>File</Menubar.Trigger>
 			<Menubar.Content>
-				<Menubar.Item>
-					New Tab
-					<Menubar.Shortcut>⌘T</Menubar.Shortcut>
-				</Menubar.Item>
-				<Menubar.Item>New Window</Menubar.Item>
+				<a href="/">
+					<Menubar.Item>
+						Lyrics
+						<Menubar.Shortcut>ctrl + L</Menubar.Shortcut>
+					</Menubar.Item>
+				</a>
 				<Menubar.Separator />
-				<Menubar.Item>Share</Menubar.Item>
-				<Menubar.Separator />
-				<Menubar.Item>Print</Menubar.Item>
+				<a href="/settings">
+					<Menubar.Item>
+						Settings
+						<Menubar.Shortcut>ctrl + P</Menubar.Shortcut>
+					</Menubar.Item>
+				</a>
 			</Menubar.Content>
 		</Menubar.Menu>
 
 		<div class="flex gap-3">
 			<Menubar.Menu>
 				<Menubar.Trigger
-					class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-slate-100 p-1 text-black hover:bg-slate-200"
+					class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-slate-100 p-1 text-black hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
 					on:click={() => appWindow.minimize()}
 				>
-					<Minus size="16" />
+					<Minus size="16" class="dark:text-white" />
 				</Menubar.Trigger>
 			</Menubar.Menu>
 			<Menubar.Menu>
 				{#if isMaximized}
 					<Menubar.Trigger
-						class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-slate-100 p-1 text-black hover:bg-slate-200"
+						class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-slate-100 p-1 text-black hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
 						on:click={() => {
 							appWindow.unmaximize();
 							isMaximized = false;
 						}}
 					>
-						<Minimize size="16" />
+						<Minimize size="16" class="dark:text-white" />
 					</Menubar.Trigger>
 				{:else}
 					<Menubar.Trigger
-						class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-slate-100 p-1 text-black hover:bg-slate-200"
+						class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-slate-100 p-1 text-black hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
 						on:click={() => {
 							appWindow.maximize();
 							isMaximized = true;
 						}}
 					>
-						<Maximize size="16" />
+						<Maximize size="16" class="dark:text-white" />
 					</Menubar.Trigger>
 				{/if}
 			</Menubar.Menu>
 			<Menubar.Menu>
 				<Menubar.Trigger
-					class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-slate-100 p-1 text-black hover:bg-slate-200"
+					class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-slate-100 p-1 text-black hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
 					on:click={() => appWindow.close()}
 				>
-					<X size="16" />
+					<X size="16" class="dark:text-white" />
 				</Menubar.Trigger>
 			</Menubar.Menu>
 		</div>

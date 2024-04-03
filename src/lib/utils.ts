@@ -4,6 +4,7 @@ import { cubicOut } from "svelte/easing";
 import type { TransitionConfig } from "svelte/transition";
 import { invoke } from '@tauri-apps/api/tauri';
 import { currentLyrics, currentPlaying, plainLyrics, type Track } from "./stores";
+import { browser } from "$app/environment";
 
 
 export function cn(...inputs: ClassValue[]) {
@@ -99,6 +100,16 @@ export const getCurrentPlaying = async () => {
     }
 };
 
+export const getAllPlayers = async () => {
+    try {
+        const response: Track[] = await invoke('get_all_players');
+        return response;
+    } catch (error) {
+        console.error('Error getting all players:', error);
+        throw error;
+    }
+}
+
 export const downloadLyrics = async () => {
     // download lyrics to lrc file
     const playInfo = await getCurrentPlaying();
@@ -121,5 +132,11 @@ export const downloadLyrics = async () => {
     } catch (error) {
         console.error('Error downloading lyrics:', error);
         throw error;
+    }
+}
+
+export const setDefaultPlayer = (player: string) => {
+    if (browser) {
+        localStorage.setItem('defaultPlayer', player);
     }
 }
