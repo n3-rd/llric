@@ -98,3 +98,28 @@ export const getCurrentPlaying = async () => {
         throw error;
     }
 };
+
+export const downloadLyrics = async () => {
+    // download lyrics to lrc file
+    const playInfo = await getCurrentPlaying();
+    const artist = playInfo.artist;
+    const title = playInfo.title;
+    try {
+        const response = await fetch(
+            `https://lrclib.net/api/search?artist_name=${artist}&track_name=${title}`
+        );
+        if (!response.ok) {
+            throw new Error('Failed to fetch lyrics');
+        }
+        const data = await response.blob();
+        const url = URL.createObjectURL(data);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${artist} - ${title}.lrc`;
+        a.click();
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error('Error downloading lyrics:', error);
+        throw error;
+    }
+}

@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { Lyrics } from 'paroles';
-	import { getLyrics, getCurrentPlaying } from '$lib/utils';
+	import { getLyrics, getCurrentPlaying, downloadLyrics } from '$lib/utils';
 	import { currentPlaying, type Track } from '$lib/stores';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index';
@@ -42,7 +42,6 @@
 	setInterval(async () => {
 		time = await invoke('get_current_audio_time');
 		if (sync) {
-			console.log(await getCurrentPlaying());
 			let playInfo = await getCurrentPlaying();
 			currentPlayingArtist = playInfo.artist;
 			currentPlayingTitle = playInfo.title;
@@ -62,7 +61,7 @@
 				nextLine = sync.atTime(time + 1);
 			}
 		}
-	}, 1000); // Update every second
+	}, 300); // Update every second
 </script>
 
 <div class="relative flex min-h-[80vh] min-w-full items-center justify-center rounded-xl">
@@ -78,7 +77,17 @@
 
 				<Tooltip.Root>
 					<Tooltip.Trigger>
-						<Download />
+						<button 
+						on:click={async () => {
+							console.log('Downloading lyrics');
+							await downloadLyrics();
+						}}
+						>
+						<Download
+						
+						/>
+						</button>
+						
 					</Tooltip.Trigger>
 					<Tooltip.Content side="bottom">
 						<p>Download LRC file</p>
