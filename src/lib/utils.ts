@@ -64,10 +64,9 @@ export const flyAndScale = (
     };
 };
 
-export let lyricsLoading = true;
+// export let lyricsLoading = true;
 
 export const getLyrics = async (track: Track) => {
-    lyricsLoading = true;
     try {
         const response = await fetch(
             `https://lrclib.net/api/search?artist_name=${track.artist}&track_name=${track.title}`
@@ -76,14 +75,15 @@ export const getLyrics = async (track: Track) => {
             throw new Error('Failed to fetch lyrics');
         }
         const data = await response.json();
+        if (!data || !data[0]) {
+            throw new Error('No data returned from the API');
+        }
         const lyrics = data[0].syncedLyrics;
         currentLyrics.set(lyrics);
         plainLyrics.set(data[0].plainLyrics);
-        lyricsLoading = false;
         return lyrics;
     } catch (error) {
         console.error('Error fetching lyrics:', error);
-        lyricsLoading = false;
         throw error;
     }
 };

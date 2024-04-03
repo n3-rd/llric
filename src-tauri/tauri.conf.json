@@ -40,7 +40,7 @@
 				"icons/icon.icns",
 				"icons/icon.ico"
 			],
-			"identifier": "com.tauri.dev",
+			"identifier": "com.n3rd.llric",
 			"longDescription": "",
 			"macOS": {
 				"entitlements": null,
