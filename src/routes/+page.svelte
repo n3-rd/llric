@@ -17,8 +17,9 @@
 	let nextLine;
 	let prevPlaying: Track | null;
 
-	let _currentPlayingArtist = currentPlaying?.artist;
-	let _currentPlayingTitle = currentPlaying?.title;
+	let currentPlayingArtist;
+	let currentPlayingTitle;
+	let prevPlayingTitle;
 
 	const leadTime = -600;
 
@@ -27,6 +28,10 @@
 		lyrics = await getLyrics(prevPlaying);
 		sync = new Lyrics(lyrics);
 		time = await invoke('get_current_audio_time');
+
+		if (prevPlaying) {
+			prevPlayingTitle = prevPlaying.title;
+		}
 
 		if (sync) {
 			currentLine = sync.atTime(time - leadTime / 1000);
@@ -37,8 +42,25 @@
 	setInterval(async () => {
 		time = await invoke('get_current_audio_time');
 		if (sync) {
-			currentLine = sync.atTime(time - leadTime / 1000);
-			nextLine = sync.atTime(time + 1);
+			console.log(await getCurrentPlaying());
+			let playInfo = await getCurrentPlaying();
+			currentPlayingArtist = playInfo.artist;
+			currentPlayingTitle = playInfo.title;
+
+			// Check if the song has changed
+			if (prevPlayingTitle !== currentPlayingTitle) {
+				// Update the lyrics and other related information
+				lyrics = await getLyrics(playInfo);
+				sync = new Lyrics(lyrics);
+				currentLine = sync.atTime(time - leadTime / 1000);
+				nextLine = sync.atTime(time + 1);
+
+				// Update the previous playing title
+				prevPlayingTitle = currentPlayingTitle;
+			} else {
+				currentLine = sync.atTime(time - leadTime / 1000);
+				nextLine = sync.atTime(time + 1);
+			}
 		}
 	}, 1000); // Update every second
 </script>
@@ -49,9 +71,9 @@
 			<div class="flex min-w-full justify-between">
 				<div class="flex gap-2">
 					<div class="song-title font-semibold text-gray-900">
-						{_currentPlayingTitle} -
+						{currentPlayingTitle} -
 					</div>
-					<div class="song-artist text-gray-600">{_currentPlayingArtist}</div>
+					<div class="song-artist text-gray-600">{currentPlayingArtist}</div>
 				</div>
 
 				<Tooltip.Root>
@@ -73,7 +95,7 @@
 
 		<Tabs.Content value="syncedLyrics">
 			<div class="lyrics text-center text-3xl font-extrabold">
-				{currentLine?.text || 'No lyrics found'}
+				{currentLine?.text || '-'}
 			</div>
 		</Tabs.Content>
 		<Tabs.Content value="plainLyrics" class="whitespace-pre pt-16">
