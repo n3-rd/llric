@@ -20,7 +20,9 @@ export const load: Load = async () => {
     prevPlaying = await getCurrentPlaying();
     lyrics = await getLyrics(prevPlaying);
     sync = new Lyrics(lyrics);
-    time = await invoke('get_current_audio_time');
+    const defaultPlayer = localStorage.getItem('defaultPlayer') || 'spotify';
+
+    time = await invoke('get_current_audio_time', { player: defaultPlayer });
 
     if (sync) {
         currentLine = sync.atTime(time - leadTime / 1000);

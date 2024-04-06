@@ -89,11 +89,18 @@ export const getLyrics = async (track: Track) => {
     }
 };
 
+
+
 export const getCurrentPlaying = async () => {
     try {
-        const response: Track = await invoke('get_current_media_metadata');
-        currentPlaying.set(response);
-        return response;
+        if (browser) {
+            const defaultPlayer = localStorage.getItem('defaultPlayer') || 'spotify';
+            console.log('defaultPlayer:', defaultPlayer);
+
+            const response: Track = await invoke('get_current_media_metadata', { player: defaultPlayer });
+            currentPlaying.set(response);
+            return response;
+        }
     } catch (error) {
         console.error('Error getting current playing track:', error);
         throw error;
@@ -102,8 +109,11 @@ export const getCurrentPlaying = async () => {
 
 export const getAllPlayers = async () => {
     try {
-        const response: Track[] = await invoke('get_all_players');
-        return response;
+        if (browser) {
+            const defaultPlayer = localStorage.getItem('defaultPlayer') || 'spotify';
+            const response: Track[] = await invoke('get_all_players', { player: defaultPlayer });
+            return response;
+        }
     } catch (error) {
         console.error('Error getting all players:', error);
         throw error;
@@ -138,5 +148,11 @@ export const downloadLyrics = async () => {
 export const setDefaultPlayer = (player: string) => {
     if (browser) {
         localStorage.setItem('defaultPlayer', player);
+    }
+}
+export const getDefualtPlayer = async () => {
+    if (browser) {
+        const defaultPlayer = localStorage.getItem('defaultPlayer') || 'spotify';
+        return defaultPlayer;
     }
 }

@@ -1,8 +1,13 @@
 <script>
 	import { browser } from '$app/environment';
 	import Menubar from '$lib/components/Menubar.svelte';
+	import { onMount } from 'svelte';
 	import '../app.pcss';
 	import { ModeWatcher } from 'mode-watcher';
+	import { getCurrentPlaying } from '$lib/utils';
+	onMount(async () => {
+		console.log('curr', await getCurrentPlaying());
+	});
 	if (browser) {
 		if (!localStorage.getItem('defaultPlayer')) {
 			localStorage.setItem('defaultPlayer', 'rythmbox');

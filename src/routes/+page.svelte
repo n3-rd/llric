@@ -2,7 +2,13 @@
 	import { onMount } from 'svelte';
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { Lyrics } from 'paroles';
-	import { getLyrics, getCurrentPlaying, downloadLyrics, getAllPlayers } from '$lib/utils';
+	import {
+		getLyrics,
+		getCurrentPlaying,
+		downloadLyrics,
+		getAllPlayers,
+		getDefualtPlayer
+	} from '$lib/utils';
 	import { currentPlaying, type Track } from '$lib/stores';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index';
@@ -23,13 +29,14 @@
 	let prevPlayingTitle;
 
 	const leadTime = -600;
-
+	console.log('iii');
 	onMount(async () => {
-		console.log(await getAllPlayers());
 		prevPlaying = await getCurrentPlaying();
 		lyrics = await getLyrics(prevPlaying);
 		sync = new Lyrics(lyrics);
-		time = await invoke('get_current_audio_time');
+		const defaultPlayer = localStorage.getItem('defaultPlayer') || 'spotify';
+		console.log('dp', defaultPlayer);
+		time = await invoke('get_current_audio_time', { player: defaultPlayer });
 
 		if (prevPlaying) {
 			prevPlayingTitle = prevPlaying.title;
@@ -42,7 +49,8 @@
 	});
 
 	setInterval(async () => {
-		time = await invoke('get_current_audio_time');
+		const defaultPlayer = await getDefualtPlayer();
+		time = await invoke('get_current_audio_time', { player: defaultPlayer });
 		if (sync) {
 			let playInfo = await getCurrentPlaying();
 			currentPlayingArtist = playInfo.artist;
