@@ -16,6 +16,7 @@
 	import { Download } from 'lucide-svelte';
 	import { plainLyrics } from '$lib/stores';
 	import CurrentPlaying from '$lib/components/CurrentPlaying.svelte';
+	import { browser } from '$app/environment';
 
 	let lyrics;
 	let sync: Lyrics;
@@ -23,6 +24,13 @@
 	let currentLine: { text: any };
 	let nextLine;
 	let prevPlaying: Track | null;
+	let defaultPlayer;
+
+	$: {
+		if (browser) {
+			defaultPlayer = localStorage.getItem('defaultPlayer') || 'spotify';
+		}
+	}
 
 	let currentPlayingArtist;
 	let currentPlayingTitle;
@@ -105,8 +113,8 @@
 	</Tabs.Root>
 </div>
 
-<!-- <style>
-	data-[state=active]{
-
-	}
-</style> -->
+<div class="relative">
+	<div class="absolute bottom-0 left-0">
+		{defaultPlayer}
+	</div>
+</div>
